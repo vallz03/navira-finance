@@ -43,17 +43,33 @@
 			<div class="title">Total Pengeluaran</div>
 			<div class="value" id="pengeluaran">Rp 0</div>
 		</div>
+		<div id="peringatan" class="alert-card hidden">
+			<div class="alert-header">
+				<span class="alert-icon">⚠️</span>
+				<div class="alert-title">
+					<h4>Peringatan Keuangan</h4>
+					<small id="alert-subtitle">Perlu perhatian</small>
+				</div>
+			</div>
+
+			<div class="alert-body" id="alert-message"></div>
+
+			<div class="alert-recommendation">
+				<h5>💡 Rekomendasi Penghematan</h5>
+				<ul id="alert-recommend-list"></ul>
+			</div>
+		</div>
 	</section>
 
 	<section id="transaksi">
 		<h2>Tambah Transaksi</h2>
 		<label>Pilih Jenis</label>
-<select name="jenis" id="jenis">
-	<option value="pemasukan">Pemasukan</option>
-	<option value="pengeluaran">Pengeluaran</option>
-</select>
-<label for="tanggal">Pilih Tanggal</label>
-<input type="date" id="tanggal" />
+		<select name="jenis" id="jenis">
+			<option value="pemasukan">Pemasukan</option>
+			<option value="pengeluaran">Pengeluaran</option>
+		</select>
+		<label for="tanggal">Pilih Tanggal</label>
+		<input type="date" id="tanggal" />
 		<label>Metode Pembayaran</label>
 		<input type="text" id="metode" placeholder="Metode (Seabank, Gopay)" />
 		<label>Kategori</label>
@@ -87,19 +103,18 @@
 	<section id="riwayat">
 		<h3>Riwayat</h3>
 		<table id="datariwayat">
-		<thead>
-			<tr>
-				<th>Tanggal</th>
-				<th>Jenis</th>
-				<th>Metode</th>
-				<th>Kategori</th>
-				<th>Deskripsi</th>
-				<th>Nominal</th>
-				<th>Pesan</th>
-				<th>Aksi</th>
-			</tr>
-		</thead>
-		<tbody></tbody>
+			<thead>
+				<tr>
+					<th>Tanggal</th>
+					<th>Jenis</th>
+					<th>Metode</th>
+					<th>Kategori</th>
+					<th>Deskripsi</th>
+					<th>Nominal</th>
+					<th>Aksi</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
 		</table>
 	</section>
 
@@ -110,33 +125,33 @@
 			<input type="text" id="username" placeholder="Username" />
 			<label for="pass">Password</label>
 			<div class="password-box">
-    <input type="password" id="password" placeholder="Password">
-      <span onclick="togglePassword('password', this)" style="cursor:pointer">🔒
-    </span>
-</div>
+				<input type="password" id="password" placeholder="Password">
+				<span onclick="togglePassword('password', this)" style="cursor:pointer">🔒
+				</span>
+			</div>
 
 
 			<button onclick="login()">Login</button>
 			<button onclick="daftar()">Daftar User</button>
 
 			<div class="ubahsandi">
-    <h4>Ubah Sandi</h4>
+				<h4>Ubah Sandi</h4>
 
-    <label>Sandi Baru</label>
-    <div class="password-wrapper">
-        <input type="password" id="ubahsandi" placeholder="Masukkan Sandi baru" />
-        <span class="toggle-eye" onclick="togglePassword('ubahsandi', this)">🔒</span>
-    </div>
+				<label>Sandi Baru</label>
+				<div class="password-wrapper">
+					<input type="password" id="ubahsandi" placeholder="Masukkan Sandi baru" />
+					<span class="toggle-eye" onclick="togglePassword('ubahsandi', this)">🔒</span>
+				</div>
 
-    <label>Konfirmasi Sandi</label>
-    <div class="password-wrapper">
-        <input type="password" id="konfirmasiSandi" placeholder="Masukkan Konfirmasi sandi" />
-        <span class="toggle-eye" onclick="togglePassword('konfirmasiSandi', this)">🔒</span>
-    </div>
+				<label>Konfirmasi Sandi</label>
+				<div class="password-wrapper">
+					<input type="password" id="konfirmasiSandi" placeholder="Masukkan Konfirmasi sandi" />
+					<span class="toggle-eye" onclick="togglePassword('konfirmasiSandi', this)">🔒</span>
+				</div>
 
-    <button onclick="ubahsandi()">Ubah Sandi</button>
-    <p id="msgSandi"></p>
-</div>
+				<button onclick="ubahsandi()">Ubah Sandi</button>
+				<p id="msgSandi"></p>
+			</div>
 
 
 			<p id="msg"></p>
@@ -145,7 +160,6 @@
 	</section>
 
 </body>
-<script src="script.js"></script>
+<script src="1.1.js"></script>
 
 </html>
-
