@@ -369,9 +369,7 @@ body.dark select {
         right: 12px;
     }
 }
-/* =========================
-   ALERT DASHBOARD PREMIUM
-========================= */
+
 .alert-card {
     max-width: 100%;
     margin: 20px 0;
@@ -450,4 +448,72 @@ body.dark select {
         opacity: 1;
         transform: translateY(0);
     }
+}
+/* =========================
+   INFO FILTER
+========================= */
+.filter-info {
+    margin: 12px 0;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #eef2ff, #ffffff);
+    border-left: 4px solid #4f46e5;
+    border-radius: 8px;
+    color: #3730a3;
+    font-size: 13px;
+    animation: fadeIn 0.3s ease;
+}
+
+.filter-info.hidden {
+    display: none;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.notif {
+    position: fixed;
+    top: 30px; 
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    padding: 14px 22px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: center;
+    min-width: 260px;
+
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+.notif {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    background: #3b82f6;
+    color: #fff;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .3s ease, top .3s ease;
+    z-index: 99999;
+}
+
+.notif.show {
+    opacity: 1;
+    top: 40px;
+}
+
+.notif.success {
+    background: #22c55e;
+}
+
+.notif.warning {
+    background: #f59e0b;
 }
