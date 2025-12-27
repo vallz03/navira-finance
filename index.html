@@ -65,6 +65,7 @@
 		<h2>Tambah Transaksi</h2>
 		<label>Pilih Jenis</label>
 		<select name="jenis" id="jenis">
+			<option value="">Pilih</option>
 			<option value="pemasukan">Pemasukan</option>
 			<option value="pengeluaran">Pengeluaran</option>
 		</select>
@@ -85,6 +86,7 @@
 		<h3>Filter</h3>
 		<label>Pilih jenis</label>
 		<select name="filterJenis" id="filterJenis">
+			<option value="">Pilih</option>
 			<option value="pemasukan">Pemasukan</option>
 			<option value="pengeluaran">Pengeluaran</option>
 		</select>
@@ -98,6 +100,9 @@
 		<input type="date" id="tglAkhir">
 		<button onclick="terapkan()">Terapkan</button>
 		<button onclick="reset()">Reset</button>
+
+		<div id="infoFilter" class="filter-info hidden"></div>
+
 	</section>
 
 	<section id="riwayat">
@@ -159,8 +164,9 @@
 		</div>
 	</section>
 
+	<div id="notif" class="notif"></div>
+
 </body>
-<script src="script.js"></script>
+<script src="1.1.js"></script>
 
 </html>
-
