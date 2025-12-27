@@ -227,8 +227,6 @@ function loadRiwayat() {
                         <td>${d.kategori}</td>
                         <td>${d.desk}</td>
                         <td>${formatRupiah(d.nominal)}</td>
-                        <td>
-                        </td>
                         <td><button onclick="edit('${key}')">Edit</button>
                             <button onclick="hapus('${key}')">Hapus</button>
                             </td>
@@ -258,21 +256,32 @@ function hapus(key) {
     }
 }
 
+/* ================================
+   BATAS PENGELUARAN
+================================ */
+const batasPengeluaran = 100000; // Rp 100.000
+
+/* ================================
+   DASHBOARD + PERINGATAN + REKOMENDASI (FIX FINAL)
+================================ */
 function updateDashboard() {
     if (!currentUser) return;
 
     let totalPemasukan = 0;
     let totalPengeluaran = 0;
 
-    // Ambil elemen dashboard (WAJIB)
     const elIncome = document.getElementById("total-income");
     const elExpense = document.getElementById("pengeluaran");
     const elBalance = document.getElementById("total-balance");
 
-    // Reset tampilan awal
-    elIncome.innerText = "Rp 0";
-    elExpense.innerText = "Rp 0";
-    elBalance.innerText = "Rp 0";
+    const card = document.getElementById("peringatan");
+    const msgBox = document.getElementById("alert-message");
+    const recList = document.getElementById("alert-recommend-list");
+
+    // Reset UI
+    card.classList.add("hidden");
+    msgBox.innerHTML = "";
+    recList.innerHTML = "";
 
     db.ref("transaksi/" + currentUser).once("value", snapshot => {
         snapshot.forEach(child => {
@@ -286,11 +295,47 @@ function updateDashboard() {
             }
         });
 
-        const saldoAkhir = totalPemasukan - totalPengeluaran;
+        const saldo = totalPemasukan - totalPengeluaran;
 
+        // Update angka dashboard
         elIncome.innerText = formatRupiah(totalPemasukan);
         elExpense.innerText = formatRupiah(totalPengeluaran);
-        elBalance.innerText = formatRupiah(saldoAkhir);
+        elBalance.innerText = formatRupiah(saldo);
+
+        /* =========================
+           LOGIKA PERINGATAN
+        ========================= */
+        let pesan = [];
+        let rekomendasi = [];
+
+        if (totalPengeluaran > batasPengeluaran) {
+            pesan.push(`Pengeluaran Anda telah melebihi batas <b>${formatRupiah(batasPengeluaran)}</b>.`);
+            rekomendasi.push("Tetapkan batas belanja harian");
+        }
+
+        if (totalPengeluaran > totalPemasukan) {
+            pesan.push("Pengeluaran lebih besar dari pemasukan.");
+            rekomendasi.push("Kurangi belanja non-prioritas");
+        }
+
+        if (totalPemasukan > 0 && totalPengeluaran >= totalPemasukan * 0.8) {
+            pesan.push("Pengeluaran sudah mencapai 80% dari pemasukan.");
+            rekomendasi.push("Tunda pembelian besar sementara");
+        }
+
+        if (saldo <= 0) {
+            pesan.push("Saldo Anda berada pada kondisi kritis.");
+            rekomendasi.push("Gunakan metode pembayaran tunai");
+        }
+
+        if (pesan.length > 0) {
+            card.classList.remove("hidden");
+            msgBox.innerHTML = pesan.map(p => `• ${p}`).join("<br>");
+
+            rekomendasi.forEach(r => {
+                recList.innerHTML += `<li>${r}</li>`;
+            });
+        }
     });
 }
 
