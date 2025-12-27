@@ -1,0 +1,371 @@
+/* ===============================
+   RESET & ROOT
+================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", "Segoe UI", sans-serif;
+}
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4338ca;
+    --accent: #22d3ee;
+    --bg: #f4f6fb;
+    --card: rgba(255,255,255,.85);
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: rgba(255,255,255,.4);
+    --danger: #ef4444;
+    --success: #22c55e;
+    --shadow: 0 20px 50px rgba(0,0,0,.12);
+}
+
+/* ===============================
+   BODY
+================================ */
+body {
+    background: radial-gradient(circle at top, #e0e7ff, #f8fafc);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* ===============================
+   HEADER
+================================ */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,.65);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--shadow);
+    padding: 18px 45px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,.4);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+}
+
+nav a {
+    text-decoration: none;
+    font-weight: 600;
+    color: var(--text);
+    position: relative;
+    letter-spacing: .3px;
+}
+
+nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -8px;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 10px;
+    transition: .35s ease;
+    transform: translateX(-50%);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* ===============================
+   BUTTON
+================================ */
+button {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border: none;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 14px;
+    font-weight: 600;
+    margin: 10px 12px;
+    cursor: pointer;
+    transition: .35s ease;
+    box-shadow: 0 12px 30px rgba(99,102,241,.45);
+}
+
+button:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 20px 45px rgba(99,102,241,.6);
+}
+
+.theme-btn {
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 999;
+    border-radius: 50px;
+}
+
+/* ===============================
+   SECTION
+================================ */
+section {
+    max-width: 1150px;
+    margin: 45px auto;
+    padding: 30px;
+}
+
+/* ===============================
+   DASHBOARD
+================================ */
+#dashboard h1 {
+    margin-bottom: 30px;
+    font-size: 28px;
+}
+
+.card-big {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 35px;
+    border-radius: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 25px 60px rgba(99,102,241,.5);
+}
+
+.card {
+    background: var(--card);
+    backdrop-filter: blur(12px);
+    padding: 22px;
+    border-radius: 22px;
+    margin-bottom: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.title {
+    font-size: 14px;
+    opacity: .8;
+    letter-spacing: .5px;
+}
+
+.value {
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+/* ===============================
+   FORM
+================================ */
+label {
+    display: block;
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+input, select {
+    width: 100%;
+    padding: 13px 14px;
+    margin-top: 6px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.85);
+    outline: none;
+    transition: .3s;
+}
+
+input:focus, select:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 5px rgba(99,102,241,.18);
+}
+
+input:hover, select:hover{
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 5px rgba(99,102,241,.18);
+}
+
+/* ===============================
+   TRANSAKSI & FILTER
+================================ */
+#transaksi,
+#filter {
+    background: var(--card);
+    backdrop-filter: blur(14px);
+    border-radius: 26px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+#transaksi h2,
+#filter h3 {
+    margin-bottom: 18px;
+}
+
+/* ===============================
+   RIWAYAT
+================================ */
+#riwayat {
+    background: var(--card);
+    backdrop-filter: blur(14px);
+    border-radius: 26px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+thead {
+    background: rgba(99,102,241,.1);
+}
+
+th, td {
+    padding: 15px;
+    font-size: 14px;
+}
+
+tbody tr {
+    transition: .25s;
+}
+
+tbody tr:hover {
+    background: rgba(99,102,241,.08);
+}
+
+/* ===============================
+   LOGIN
+================================ */
+#login {
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    background: var(--card);
+    backdrop-filter: blur(16px);
+    padding: 35px;
+    border-radius: 26px;
+    width: 100%;
+    max-width: 430px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.container h4 {
+    text-align: center;
+    margin-bottom: 22px;
+    font-size: 20px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.toggle-eye {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: .6;
+}
+
+.toggle-eye:hover {
+    opacity: 1;
+}
+
+/* ===============================
+   MESSAGE
+================================ */
+#msg {
+    color: var(--danger);
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+#msgReg,
+#msgSandi {
+    color: var(--success);
+    margin-top: 12px;
+    font-size: 14px;
+}
+
+/* ===============================
+   DARK MODE
+================================ */
+body.dark {
+    --bg: #020617;
+    --card: rgba(2,6,23,.8);
+    --text: #e5e7eb;
+    --border: rgba(255,255,255,.08);
+    background: radial-gradient(circle at top, #020617, #020617);
+}
+
+body.dark header {
+    background: rgba(2,6,23,.7);
+}
+
+body.dark nav a {
+    color: #e5e7eb;
+}
+
+body.dark input,
+body.dark select {
+    background: rgba(2,6,23,.9);
+    color: white;
+}
+/* ===============================
+   PASSWORD TOGGLE STYLE
+================================ */
+
+.password-box {
+    position: relative;
+    width: 100%;
+}
+
+.password-box input {
+    width: 100%;
+    padding: 13px 14px;
+    margin-top: 6px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    background: rgba(255,255,255,.85);
+    outline: none;
+    transition: .3s;
+}
+
+.password-box input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+/* ICON */
+.password-box span {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: .6;
+}
+
+.password-box span:hover {
+    opacity: 1;
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* MOBILE FRIENDLY */
+@media (max-width: 480px) {
+    .password-box input {
+        padding: 11px 40px 11px 12px;
+        font-size: 14px;
+    }
+
+    .password-box span {
+        font-size: 16px;
+        right: 12px;
+    }
+}
