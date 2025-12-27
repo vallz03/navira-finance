@@ -1,510 +1,150 @@
+<!DOCTYPE html>
+<html lang="id">
 
-
-<!DOCTYPE html><html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Catatan Pengeluaran</title>  <!-- Firebase -->  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>  <!-- Chart.js -->  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>  <!-- XLSX Export -->  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #00ffea;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-    }
-    .login-box, .main-box {
-      background: #ffffff;
-      padding: 25px 30px;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    h2, h3 { margin-top: 0; color: #333; }
-    input, select, button {
-      width: 100%; padding: 10px; margin: 8px 0;
-      border: 1px solid #ccc; border-radius: 6px;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white; font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover { background-color: #45a049; }
-    .logout { text-align: right; margin-bottom: 10px; }
-    table {
-      width: 100%; border-collapse: collapse;
-      margin-top: 15px; background: #fff;
-    }
-    th, td {
-      border: 1px solid #ddd; padding: 10px;
-      text-align: left; font-size: 14px;
-    }
-    th { background-color: #f2f2f2; font-weight: bold; }
-    canvas {
-      margin-top: 25px; background: #fff;
-      padding: 10px; border-radius: 10px;
-    }
-    @media (max-width: 600px) {
-      input, select, button { font-size: 14px; }
-      table, thead, tbody, th, td, tr { font-size: 12px; }
-    }
-    #rangeFilter button {
-      padding: 8px 12px;
-      margin: 5px 4px;
-      border: none;
-      border-radius: 20px;
-      background-color: #eee;
-      color: #333;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    #rangeFilter button:hover { background-color: lch(49.94% 84.26 290.96); }
-  </style></head>
-<body><div class="container">
-  <div class="login-box" id="loginBox">
-    <h2>Login / Daftar</h2>
-    <input type="text" id="username" placeholder="Nama Pengguna" />
-    <input type="password" id="password" placeholder="Kata Sandi" />
-    <button onclick="login()">🔓 Login</button>
-    <button onclick="register()">📝 Daftar</button>
-  </div>  <div class="main-box" id="appBox" style="display:none;">
-    <div id="adminUserList" style="margin-top:20px; display:none;">
-  <h3>📋 Daftar Pengguna</h3>
-  <table border="1" cellpadding="5" cellspacing="0" style="width:100%;">
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="userTableBody"></tbody>
-  </table>
+	<meta name="view-port" content="width=device-width, initial-scale=1.0" />
+	<meta charset="UTF-8">
+	<title>NAVIRA FINANCE</title>
+	<link rel="stylesheet" href="1.css" />
+
+	<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+</head>
+
+<body>
+	<header>
+		<img src="https://files.catbox.moe/vr7s2b.png" alt="Logo" width="200" height="130" />
+		<nav>
+			<ul>
+				<li><a href="#dashboard">Dasboard</a></li>
+				<li><a href="#transaksi">Transaksi</a></li>
+				<li><a href="#filter">Filter</a></li>
+				<li><a href="#riwayat">Riwayat</a></li>
+				<li><a href="#login">Login</a></li>
+			</ul>
+		</nav>
+	</header>
+
+	<button id="theme-toogle" class="theme-btn">🌙 Dark</button>
+	<button onclick="logout()">Logout</button>
+
+	<section id="dashboard">
+		<h1>📊 Dasboard</h1>
+		<div class="card-big">
+			<div class="title">Total saldo</div>
+			<div class="value" id="total-balance">Rp 0</div>
+		</div>
+		<div class="card">
+			<div class="title">Total Pemasukan</div>
+			<div class="value" id="total-income">Rp 0</div>
+		</div>
+		<div class="card">
+			<div class="title">Total Pengeluaran</div>
+			<div class="value" id="pengeluaran">Rp 0</div>
+		</div>
+	</section>
+
+	<section id="transaksi">
+		<h2>Tambah Transaksi</h2>
+		<label>Pilih Jenis</label>
+<select name="jenis" id="jenis">
+	<option value="pemasukan">Pemasukan</option>
+	<option value="pengeluaran">Pengeluaran</option>
+</select>
+<label for="tanggal">Pilih Tanggal</label>
+<input type="date" id="tanggal" />
+		<label>Metode Pembayaran</label>
+		<input type="text" id="metode" placeholder="Metode (Seabank, Gopay)" />
+		<label>Kategori</label>
+		<input type="text" id="kategori" placeholder="kategori" />
+		<label>Deskripsi</label>
+		<input type="text" id="desk" placeholder="Deskripsi" />
+		<label>Nominal</label>
+		<input type="number" id="nominal" placeholder="Nominal" />
+		<button onclick=simpan()>Simpan</button>
+	</section>
+
+	<section id="filter">
+		<h3>Filter</h3>
+		<label>Pilih jenis</label>
+		<select name="filterJenis" id="filterJenis">
+			<option value="pemasukan">Pemasukan</option>
+			<option value="pengeluaran">Pengeluaran</option>
+		</select>
+		<label>Metode</label>
+		<input type="text" id="filterMetode" placeholder="Metode (Seabank / Gopay)" />
+		<label>Kategori</label>
+		<input type="text" id="filterKategori" placeholder="Masukkan Kategori">
+		<label for="tglAwal">Tanggal Awal</label>
+		<input type="date" id="tglAwal">
+		<label for="tglAkhir">Tanggal Akhir</label>
+		<input type="date" id="tglAkhir">
+		<button onclick="terapkan()">Terapkan</button>
+		<button onclick="reset()">Reset</button>
+	</section>
+
+	<section id="riwayat">
+		<h3>Riwayat</h3>
+		<table id="datariwayat">
+		<thead>
+			<tr>
+				<th>Tanggal</th>
+				<th>Jenis</th>
+				<th>Metode</th>
+				<th>Kategori</th>
+				<th>Deskripsi</th>
+				<th>Nominal</th>
+				<th>Pesan</th>
+				<th>Aksi</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+		</table>
+	</section>
+
+	<section id="login">
+		<div class="container">
+			<h4>Login</h4>
+			<label for="username">Username</label>
+			<input type="text" id="username" placeholder="Username" />
+			<label for="pass">Password</label>
+			<div class="password-box">
+    <input type="password" id="password" placeholder="Password">
+      <span onclick="togglePassword('password', this)" style="cursor:pointer">🔒
+    </span>
 </div>
 
-    <div class="logout">
+
+			<button onclick="login()">Login</button>
+			<button onclick="daftar()">Daftar User</button>
+
+			<div class="ubahsandi">
+    <h4>Ubah Sandi</h4>
+
+    <label>Sandi Baru</label>
+    <div class="password-wrapper">
+        <input type="password" id="ubahsandi" placeholder="Masukkan Sandi baru" />
+        <span class="toggle-eye" onclick="togglePassword('ubahsandi', this)">🔒</span>
     </div>
-    <h2>📊 Catatan Pengeluaran</h2>
-    <p>Login sebagai: <b id="userInfo"></b></p><input type="date" id="tanggal" />
-<input type="text" id="metode" placeholder="Metode Pembayaran" />
-<input type="text" id="keterangan" placeholder="Keterangan Pengeluaran" />
-<input type="number" id="jumlah" placeholder="Jumlah (Rp)" />
-<button onclick="addExpense()">💾 Simpan</button>
 
-<hr>
-<h3>📅 Filter Data</h3>
-<label>Mulai Tanggal:</label>
-<input type="date" id="filterStart">
-<label>Sampai Tanggal:</label>
-<input type="date" id="filterEnd">
-<button onclick="loadExpenses()">🔍 Terapkan</button>
-<button onclick="exportToExcel()">📄 Ekspor ke Excel</button>
-<button onclick="refreshData()">🔄 Refresh</button>
-<button onclick="clearUserFilter()" id="clearFilterBtn" style="display:none;">👤 Lihat Semua User</button>
+    <label>Konfirmasi Sandi</label>
+    <div class="password-wrapper">
+        <input type="password" id="konfirmasiSandi" placeholder="Masukkan Konfirmasi sandi" />
+        <span class="toggle-eye" onclick="togglePassword('konfirmasiSandi', this)">🔒</span>
+    </div>
 
-<table id="expenseTable">
-  <thead>
-    <tr>
-      <th>Tanggal</th>
-      <th>Metode</th>
-      <th>Keterangan</th>
-      <th>Jumlah</th>
-      <th id="olehHeader" style="display:none;">Oleh</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<h3>📈 Grafik Pengeluaran</h3>
-<div id="rangeFilter">
-  <button onclick="filterRange('1w')">1w</button>
-  <button onclick="filterRange('1m')">1m</button>
-  <button onclick="filterRange('3m')">3m</button>
-  <button onclick="filterRange('1y')">1y</button>
-</div>
-<canvas id="chart" height="100"></canvas>
-
-<hr>
-<button onclick="logout()">🚪 Logout</button>
-<button onclick="deleteAccount()" style="background-color:#dc3545;">🗑️ Hapus Akun</button>
-<div id="userPasswordBox" style="margin-top:30px; display:none;">
-  <h3>🔐 Ubah Sandi Saya</h3>
-  <input type="password" id="userNewPass" placeholder="Sandi Baru">
-  <button onclick="changeOwnUserPassword()">Ubah Sandi</button>
+    <button onclick="ubahsandi()">Ubah Sandi</button>
+    <p id="msgSandi"></p>
 </div>
 
 
-<div id="adminPasswordBox" style="margin-top:40px; display:none;">
-  <h3>🔑 Ubah Sandi Pengguna</h3>
-  <input type="text" id="targetUser" placeholder="Username Pengguna">
-  <input type="password" id="targetNewPass" placeholder="Sandi Baru">
-  <button onclick="changeUserPassword()">Ubah Sandi</button>
-  <div id="adminOwnPassBox" style="margin-top:30px; display:none;">
-  <h3>🛠️ Ubah Sandi Admin</h3>
-  <input type="password" id="adminNewPass" placeholder="Sandi Baru">
-  <button onclick="changeOwnAdminPassword()">Ubah</button>
-</div>
-</div>
-</div>
-</div>
-<script>
-  const firebaseConfig = {
-    databaseURL: "https://firr-02-default-rtdb.firebaseio.com/"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
+			<p id="msg"></p>
+			<p id="msgReg"></p>
+		</div>
+	</section>
 
-  let currentUser = "";
-  let currentRole = "";
-  let chart;
-  let currentFilterUser = "";
+</body>
+<script src="1.1.js"></script>
 
-function login() {
-  const user = username.value.trim();
-  const pass = password.value;
-
-  if (!user || !pass) {
-    alert("Username dan sandi wajib diisi.");
-    return;
-  }
-
-  // Cek login admin via Firebase
-  db.ref("admin_accounts/" + user).once("value", snap => {
-    if (snap.exists() && snap.val().password === pass) {
-      currentUser = user;
-      currentRole = "admin";
-      loginBox.style.display = "none";
-      appBox.style.display = "block";
-      userInfo.innerText = user + " (" + currentRole + ")";
-      document.getElementById("adminPasswordBox").style.display = "block";
-      document.getElementById("adminOwnPassBox").style.display = "block";
-      loadExpenses();
-      loadUsers();
-    } else {
-      // Cek login user biasa
-      db.ref("users/" + user).once("value", snap => {
-        if (snap.exists() && snap.val().password === pass) {
-          currentUser = user;
-          currentRole = "user";
-          loginBox.style.display = "none";
-          appBox.style.display = "block";
-          userInfo.innerText = user + " (" + currentRole + ")";
-          loadExpenses();
-          document.getElementById("userPasswordBox").style.display = "block";
-        } else {
-          alert("Login gagal. Username atau sandi salah.");
-        }
-      });
-    }
-  });
-}
-function register() {
-  const user = username.value.trim();
-  const pass = password.value;
-
-  if (!user || !pass) return alert("Isi semua data!");
-
-  // Cek apakah username digunakan oleh admin
-  db.ref("admin_accounts/" + user).once("value", snap => {
-    if (snap.exists()) {
-      return alert("Username ini khusus untuk admin. Silakan pilih username lain.");
-    }
-
-    // Jika bukan admin, cek apakah user sudah ada
-    db.ref("users/" + user).once("value", userSnap => {
-      if (userSnap.exists()) {
-        return alert("Username sudah terdaftar.");
-      }
-
-      // Jika belum ada, buat user baru
-      db.ref("users/" + user).set({ password: pass, role: "user" }, () => {
-        alert("Berhasil daftar, silakan login.");
-        username.value = "";
-        password.value = "";
-      });
-    });
-  });
-}
-  function logout() { location.reload(); }
-
-  function addExpense() {
-    const tgl = tanggal.value;
-    const met = metode.value;
-    const ket = keterangan.value;
-    const jml = jumlah.value;
-    if (!tgl || !met || !ket || !jml) return alert("Lengkapi semua data!");
-    const data = { tanggal: tgl, metode: met, keterangan: ket, jumlah: jml, oleh: currentUser, timestamp: Date.now() };
-    db.ref("pengeluaran").push(data, () => {
-      tanggal.value = metode.value = keterangan.value = jumlah.value = "";
-    });
-  }
-
-  function loadExpenses() {
-  const start = filterStart.value;
-  const end = filterEnd.value;
-
-  // Tampilkan kolom "Oleh" jika admin
-  document.getElementById("olehHeader").style.display = (currentRole === 'admin') ? '' : 'none';
-
-  db.ref("pengeluaran").once("value", snap => {
-    const tbody = expenseTable.querySelector("tbody");
-    tbody.innerHTML = "";
-
-    let dailyData = {};
-    let anyData = false;
-
-    snap.forEach(item => {
-      const data = item.val();
-
-      if (currentRole === 'user' && data.oleh !== currentUser) return;
-      if (currentRole === 'admin' && currentFilterUser && data.oleh !== currentFilterUser) return;
-      if (start && data.tanggal < start) return;
-      if (end && data.tanggal > end) return;
-
-      anyData = true;
-
-      tbody.innerHTML += `<tr>
-        <td>${data.tanggal}</td>
-        <td>${data.metode}</td>
-        <td>${data.keterangan}</td>
-        <td>Rp ${Number(data.jumlah).toLocaleString()}</td>
-        <td style="display:${currentRole === 'admin' ? '' : 'none'}">
-          <button onclick="filterByUser('${data.oleh}')" style="background:none;border:none;color:#007BFF;cursor:pointer;text-decoration:underline;">${data.oleh}</button>
-        </td>
-        <td>
-          <button onclick="edit('${item.key}')">✏️</button>
-          <button onclick="hapus('${item.key}')">🗑️</button>
-        </td>
-      </tr>`;
-
-      const tgl = data.tanggal;
-      dailyData[tgl] = (dailyData[tgl] || 0) + Number(data.jumlah);
-    });
-
-    updateChart(dailyData);
-    document.getElementById("clearFilterBtn").style.display = (currentRole === 'admin' && currentFilterUser) ? '' : 'none';
-  });
-}
-
-  function updateChart(data) {
-    const labels = Object.keys(data).sort();
-    const values = labels.map(k => data[k]);
-    const ctx = document.getElementById("chart").getContext("2d");
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, "rgba(0, 234, 255, 0.4)");
-    gradient.addColorStop(1, "rgba(0, 234, 255, 0)");
-    if (chart) chart.destroy();
-    chart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: "Pengeluaran Harian",
-          data: values,
-          borderColor: "#00eaff",
-          backgroundColor: gradient,
-          pointRadius: 4,
-          pointBackgroundColor: "#00eaff",
-          fill: true,
-          tension: 0.5
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: (ctx) => `Rp${Number(ctx.raw).toLocaleString()}` } }
-        },
-        scales: {
-          x: { ticks: { autoSkip: true, maxTicksLimit: 7 } },
-          y: { beginAtZero: true, ticks: { callback: val => 'Rp' + Number(val).toLocaleString() } }
-        }
-      }
-    });
-  }
-
-  function edit(id) {
-    db.ref("pengeluaran/" + id).once("value", snap => {
-      const data = snap.val();
-      tanggal.value = data.tanggal;
-      metode.value = data.metode;
-      keterangan.value = data.keterangan;
-      jumlah.value = data.jumlah;
-      addExpense = function() {
-        const newData = { tanggal: tanggal.value, metode: metode.value, keterangan: keterangan.value, jumlah: jumlah.value, oleh: currentUser, timestamp: Date.now() };
-        db.ref("pengeluaran/" + id).set(newData, () => {
-          tanggal.value = metode.value = keterangan.value = jumlah.value = "";
-          addExpense = defaultAdd;
-        });
-      }
-    });
-  }
-
-  const defaultAdd = addExpense;
-
-  function hapus(id) {
-    if (confirm("Yakin hapus data ini?")) {
-      db.ref("pengeluaran/" + id).remove();
-    }
-  }
-
-  function changePassword() {
-    const newP = newPass.value;
-    if (!newP) return alert("Isi semua!");
-    db.ref("users/" + currentUser).update({ password: newP }, () => {
-      alert("Sandi berhasil diubah.");
-      newPass.value = "";
-    });
-  }
-
-  function exportToExcel() {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.table_to_sheet(document.getElementById("expenseTable"));
-    XLSX.utils.book_append_sheet(wb, ws, "DataPengeluaran");
-    XLSX.writeFile(wb, "pengeluaran.xlsx");
-  }
-
-  function filterRange(range) {
-    const now = new Date();
-    let startDate = new Date();
-    if (range === '1w') startDate.setDate(now.getDate() - 6);
-    else if (range === '1m') startDate.setMonth(now.getMonth() - 1);
-    else if (range === '3m') startDate.setMonth(now.getMonth() - 3);
-    else if (range === '1y') startDate.setFullYear(now.getFullYear() - 1);
-    document.getElementById("filterStart").value = startDate.toISOString().split('T')[0];
-    document.getElementById("filterEnd").value = now.toISOString().split('T')[0];
-    loadExpenses();
-  }
-  function refreshData() {
-  filterStart.value = "";
-  filterEnd.value = "";
-  loadExpenses();
-}
-function filterByUser(user) {
-  currentFilterUser = user;
-  loadExpenses();
-}
-
-function clearUserFilter() {
-  currentFilterUser = "";
-  loadExpenses();
-}
-function deleteAccount() {
-  if (!confirm("Yakin ingin menghapus akun ini? Semua data terkait akan hilang.")) return;
-
-  if (currentRole === "admin") {
-    alert("Admin tidak bisa dihapus melalui aplikasi.");
-    return;
-  }
-
-  // Hapus akun dari Firebase
-  db.ref("users/" + currentUser).remove(() => {
-    // Hapus juga semua data pengeluaran miliknya
-    db.ref("pengeluaran").once("value", snap => {
-      snap.forEach(item => {
-        if (item.val().oleh === currentUser) {
-          db.ref("pengeluaran/" + item.key).remove();
-        }
-      });
-      alert("Akun dan semua data telah dihapus.");
-      logout();
-    });
-  });
-}
-function loadUsers() {
-  if (currentRole !== "admin") return;
-
-  const tableBody = document.getElementById("userTableBody");
-  tableBody.innerHTML = "";
-  db.ref("users").once("value", snap => {
-    snap.forEach(child => {
-      const user = child.key;
-      const data = child.val();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${user}</td>
-        <td>${data.role}</td>
-        <td>
-          <button onclick="deleteUser('${user}')">🗑️ Hapus</button>
-        </td>
-      `;
-      tableBody.appendChild(tr);
-    });
-  });
-  document.getElementById("adminUserList").style.display = "block";
-}
-function deleteUser(username) {
-  if (!confirm("Yakin ingin menghapus user '" + username + "'? Semua data mereka akan dihapus.")) return;
-
-  db.ref("users/" + username).remove(() => {
-    // Hapus semua pengeluaran milik user itu
-    db.ref("pengeluaran").once("value", snap => {
-      snap.forEach(item => {
-        if (item.val().oleh === username) {
-          db.ref("pengeluaran/" + item.key).remove();
-        }
-      });
-      alert("User dan datanya telah dihapus.");
-      loadUsers(); // refresh daftar user
-    });
-  });
-}
-function changeOwnUserPassword() {
-  const newPass = userNewPass.value;
-
-  if (!newPass) return alert("Isi semua kolom.");
-
-  db.ref("users/" + currentUser).once("value", snap => {
-    const data = snap.val();
-    if (data && data.password) {
-      db.ref("users/" + currentUser).update({ password: newPass }, () => {
-        alert("Sandi berhasil diubah.");
-        userNewPass.value = "";
-      });
-    }
-  });
-}
-function changeOwnAdminPassword() {
-  const newPass = adminNewPass.value;
-
-  if (!newPass) return alert("Isi semua kolom.");
-
-  db.ref("admin_accounts/" + currentUser).once("value", snap => {
-    const data = snap.val();
-    if (data && data.password) {
-      db.ref("admin_accounts/" + currentUser).update({ password: newPass }, () => {
-        alert("Sandi admin berhasil diubah.");
-        adminNewPass.value = "";
-      });
-    }
-  });
-}
-function changeUserPassword() {
-  const user = document.getElementById("targetUser").value.trim();
-  const newPass = document.getElementById("targetNewPass").value;
-
-  if (!user || !newPass) return alert("Isi semua kolom.");
-if (user === currentUser) {
-  return alert("Gunakan bagian 'Ubah Sandi Admin' untuk mengubah sandi sendiri.");
-}
-  // Cek apakah user ada
-  db.ref("users/" + user).once("value", snap => {
-    if (!snap.exists()) {
-      return alert("User tidak ditemukan.");
-    }
-
-    // Update sandi
-    db.ref("users/" + user).update({ password: newPass }, () => {
-      alert("Sandi untuk user '" + user + "' berhasil diubah.");
-      document.getElementById("targetUser").value = "";
-      document.getElementById("targetNewPass").value = "";
-    });
-  });
-}
-</script></body>
 </html>
