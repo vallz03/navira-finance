@@ -60,6 +60,7 @@ function login() {
             currentUser = username;
             currentRole = "user";
             alert(`${sapaan()}, ${username}`);
+            resetUI();
             loadAll();
         });
     });
@@ -154,19 +155,36 @@ function logout() {
     currentUser = null;
     currentRole = null;
 
+    resetUI();
+
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+
+    location.hash = "#login";
+}
+
+function resetUI() {
     document.getElementById("total-balance").innerText = "Rp 0";
     document.getElementById("total-income").innerText = "Rp 0";
     document.getElementById("pengeluaran").innerText = "Rp 0";
 
-    const riwayat = document.getElementById("riwayat");
-    if (riwayat) riwayat.innerHTML = "<h3>Riwayat</h3>";
+    // reset tabel
+    const tbody = document.querySelector("#datariwayat tbody");
+    if (tbody) tbody.innerHTML = "";
 
-    document.getElementById("username").value = "";
-    document.getElementById("pass").value = "";
+    // reset peringatan
+    const card = document.getElementById("peringatan");
+    if (card) card.classList.add("hidden");
 
-    alert("Logout berhasil!");
+    // reset filter
+    const ids = ["filterJenis","filterMetode","filterKategori","tglAwal","tglAkhir"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
 
-    location.hash = "#login";
+    // reset edit
+    editId = null;
 }
 
 function formatRupiah(angka) {
@@ -193,7 +211,10 @@ function simpan() {
         alert("Semua data wajib diisi!");
         return;
     }
-
+    if (!data.jenis || data.jenis === "pilih") {
+        alert("Jenis transaksi wajib dipilih!");
+        return;
+    }
     const ref = editId
         ? db.ref(`transaksi/${currentUser}/${editId}`)
         : db.ref(`transaksi/${currentUser}`).push();
@@ -218,19 +239,20 @@ function loadRiwayat() {
                 const d = child.val();
                 const key = child.key;
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${d.tanggal}</td>
-                        <td>${d.jenis}</td>
-                        <td>${d.metode}</td>
-                        <td>${d.kategori}</td>
-                        <td>${d.desk}</td>
-                        <td>${formatRupiah(d.nominal)}</td>
-                        <td><button onclick="edit('${key}')">Edit</button>
-                            <button onclick="hapus('${key}')">Hapus</button>
-                            </td>
-                    </tr>
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${d.tanggal}</td>
+                    <td>${d.jenis}</td>
+                    <td>${d.metode}</td>
+                    <td>${d.kategori}</td>
+                    <td>${d.desk}</td>
+                    <td>${formatRupiah(d.nominal)}</td>
+                    <td>
+                        <button onclick="edit('${key}')">Edit</button>
+                        <button onclick="hapus('${key}')">Hapus</button>
+                    </td>
                 `;
+                tbody.appendChild(tr);
             });
         });
 }
@@ -255,14 +277,8 @@ function hapus(key) {
     }
 }
 
-/* ================================
-   BATAS PENGELUARAN
-================================ */
 const batasPengeluaran = 100000; // Rp 100.000
 
-/* ================================
-   DASHBOARD + PERINGATAN + REKOMENDASI (FIX FINAL)
-================================ */
 function updateDashboard() {
     if (!currentUser) return;
 
@@ -277,7 +293,6 @@ function updateDashboard() {
     const msgBox = document.getElementById("alert-message");
     const recList = document.getElementById("alert-recommend-list");
 
-    // Reset UI
     card.classList.add("hidden");
     msgBox.innerHTML = "";
     recList.innerHTML = "";
@@ -296,14 +311,10 @@ function updateDashboard() {
 
         const saldo = totalPemasukan - totalPengeluaran;
 
-        // Update angka dashboard
         elIncome.innerText = formatRupiah(totalPemasukan);
         elExpense.innerText = formatRupiah(totalPengeluaran);
         elBalance.innerText = formatRupiah(saldo);
 
-        /* =========================
-           LOGIKA PERINGATAN
-        ========================= */
         let pesan = [];
         let rekomendasi = [];
 
@@ -339,6 +350,9 @@ function updateDashboard() {
 }
 
 function loadAll() {
+    if (!currentUser) return;
+
+    resetUI();
     loadRiwayat();
     updateDashboard();
 }
@@ -346,54 +360,78 @@ function loadAll() {
 function terapkan() {
     if (!currentUser) return;
 
-    const j = filterJenis.value;
-    const m = filterMetode.value.toLowerCase();
-    const k = filterKategori.value.toLowerCase();
-    const tA = tglAwal.value;
-    const tB = tglAkhir.value;
+    const j = document.getElementById("filterJenis").value;
+    const m = document.getElementById("filterMetode").value.trim().toLowerCase();
+    const k = document.getElementById("filterKategori").value.trim().toLowerCase();
+    const tA = document.getElementById("tglAwal").value;
+    const tB = document.getElementById("tglAkhir").value;
 
     const tbody = document.querySelector("#datariwayat tbody");
+    const info = document.getElementById("infoFilter");
+
     tbody.innerHTML = "";
+    info.classList.remove("hidden");
 
-    db.ref("transaksi/" + currentUser).once("value", snap => {
-        snap.forEach(item => {
-            const d = item.val();
+    if (!j) {
+        info.innerHTML = "⚠️ <b>Jenis transaksi wajib dipilih.</b>";
+        return;
+    }
 
-            if (
-                (j && d.jenis !== j) ||
-                (m && !d.metode.toLowerCase().includes(m)) ||
-                (k && !d.kategori.toLowerCase().includes(k)) ||
-                (tA && d.tanggal < tA) ||
-                (tB && d.tanggal > tB)
-            ) return;
+    let jumlahData = 0;
 
-            tbody.innerHTML += `
-                <tr>
+    db.ref("transaksi/" + currentUser)
+        .orderByChild("tanggal")
+        .once("value", snap => {
+            snap.forEach(item => {
+                const d = item.val();
+                const key = item.key;
+
+                if (
+                    d.jenis !== j ||
+                    (m && !d.metode.toLowerCase().includes(m)) ||
+                    (k && !d.kategori.toLowerCase().includes(k)) ||
+                    (tA && d.tanggal < tA) ||
+                    (tB && d.tanggal > tB)
+                ) return;
+
+                jumlahData++;
+
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
                     <td>${d.tanggal}</td>
                     <td>${d.jenis}</td>
                     <td>${d.metode}</td>
                     <td>${d.kategori}</td>
                     <td>${d.desk}</td>
-                    <td>Rp ${d.nominal.toLocaleString()}</td>
-                    <td>${d.jenis}</td>
-                    <td>-</td>
-                </tr>
-            `;
+                    <td>Rp ${Number(d.nominal).toLocaleString("id-ID")}</td>
+                    <td>
+                        <button onclick="edit('${key}')">Edit</button>
+                        <button onclick="hapus('${key}')">Hapus</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            info.innerHTML = jumlahData > 0
+                ? `🔍 Menampilkan <b>${jumlahData}</b> data sesuai filter.`
+                : `⚠️ Tidak ada data yang sesuai dengan filter.`;
         });
-    });
 }
 
 function reset() {
     if (!currentUser) return;
 
-    // Reset input filter
     document.getElementById("filterJenis").value = "";
     document.getElementById("filterMetode").value = "";
     document.getElementById("filterKategori").value = "";
     document.getElementById("tglAwal").value = "";
     document.getElementById("tglAkhir").value = "";
 
-    loadRiwayat();
+    const info = document.getElementById("infoFilter");
+    info.classList.add("hidden");
+    info.innerHTML = "";
+
+    loadAll();
 }
 
 const btnTheme = document.getElementById("theme-toogle");
