@@ -256,9 +256,6 @@ function hapus(key) {
     }
 }
 
-/* ================================
-   BATAS PENGELUARAN
-================================ */
 const batasPengeluaran = 100000; // Rp 100.000
 
 /* ================================
@@ -278,7 +275,6 @@ function updateDashboard() {
     const msgBox = document.getElementById("alert-message");
     const recList = document.getElementById("alert-recommend-list");
 
-    // Reset UI
     card.classList.add("hidden");
     msgBox.innerHTML = "";
     recList.innerHTML = "";
@@ -387,7 +383,6 @@ function terapkan() {
 function reset() {
     if (!currentUser) return;
 
-    // Reset input filter
     document.getElementById("filterJenis").value = "";
     document.getElementById("filterMetode").value = "";
     document.getElementById("filterKategori").value = "";
