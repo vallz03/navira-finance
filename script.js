@@ -277,7 +277,7 @@ function hapus(key) {
     }
 }
 
-const batasPengeluaran = 100000; // Rp 100.000
+const batasPengeluaran = 2125000; // Rp 2.125.000
 
 function updateDashboard() {
     if (!currentUser) return;
@@ -360,11 +360,12 @@ function loadAll() {
 function terapkan() {
     if (!currentUser) return;
 
-    const j = document.getElementById("filterJenis").value;
-    const m = document.getElementById("filterMetode").value.trim().toLowerCase();
-    const k = document.getElementById("filterKategori").value.trim().toLowerCase();
-    const tA = document.getElementById("tglAwal").value;
-    const tB = document.getElementById("tglAkhir").value;
+    const j = filterJenis.value;
+    const m = filterMetode.value.trim().toLowerCase();
+    const k = filterKategori.value.trim().toLowerCase();
+    const tA = tglAwal.value;
+    const tB = tglAkhir.value;
+    const bulan = document.getElementById("filterBulan").value;
 
     const tbody = document.querySelector("#datariwayat tbody");
     const info = document.getElementById("infoFilter");
@@ -372,12 +373,8 @@ function terapkan() {
     tbody.innerHTML = "";
     info.classList.remove("hidden");
 
-    if (!j) {
-        info.innerHTML = "⚠️ <b>Jenis transaksi wajib dipilih.</b>";
-        return;
-    }
-
     let jumlahData = 0;
+    let dataFilter = [];
 
     db.ref("transaksi/" + currentUser)
         .orderByChild("tanggal")
@@ -386,8 +383,11 @@ function terapkan() {
                 const d = item.val();
                 const key = item.key;
 
+                // FILTER BULAN (YYYY-MM)
+                if (bulan && !d.tanggal.startsWith(bulan)) return;
+
                 if (
-                    d.jenis !== j ||
+                    (j && d.jenis !== j) ||
                     (m && !d.metode.toLowerCase().includes(m)) ||
                     (k && !d.kategori.toLowerCase().includes(k)) ||
                     (tA && d.tanggal < tA) ||
@@ -395,6 +395,7 @@ function terapkan() {
                 ) return;
 
                 jumlahData++;
+                dataFilter.push(d);
 
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
@@ -403,7 +404,7 @@ function terapkan() {
                     <td>${d.metode}</td>
                     <td>${d.kategori}</td>
                     <td>${d.desk}</td>
-                    <td>Rp ${Number(d.nominal).toLocaleString("id-ID")}</td>
+                    <td>${formatRupiah(d.nominal)}</td>
                     <td>
                         <button onclick="edit('${key}')">Edit</button>
                         <button onclick="hapus('${key}')">Hapus</button>
@@ -412,26 +413,43 @@ function terapkan() {
                 tbody.appendChild(tr);
             });
 
+            // DASHBOARD SESUAI FILTER
+            updateDashboardFiltered(dataFilter);
+
             info.innerHTML = jumlahData > 0
-                ? `🔍 Menampilkan <b>${jumlahData}</b> data sesuai filter.`
-                : `⚠️ Tidak ada data yang sesuai dengan filter.`;
+                ? `📆 Menampilkan <b>${jumlahData}</b> data`
+                : `⚠️ Tidak ada data pada periode ini`;
         });
 }
 
 function reset() {
-    if (!currentUser) return;
+    filterJenis.value = "";
+    filterMetode.value = "";
+    filterKategori.value = "";
+    tglAwal.value = "";
+    tglAkhir.value = "";
+    document.getElementById("filterBulan").value = "";
 
-    document.getElementById("filterJenis").value = "";
-    document.getElementById("filterMetode").value = "";
-    document.getElementById("filterKategori").value = "";
-    document.getElementById("tglAwal").value = "";
-    document.getElementById("tglAkhir").value = "";
+    document.getElementById("infoFilter").classList.add("hidden");
+    loadAll(); // kembali ke dashboard normal
+}
 
-    const info = document.getElementById("infoFilter");
-    info.classList.add("hidden");
-    info.innerHTML = "";
 
-    loadAll();
+function updateDashboardFiltered(listData) {
+    let totalPemasukan = 0;
+    let totalPengeluaran = 0;
+
+    listData.forEach(d => {
+        const nominal = Number(d.nominal) || 0;
+        if (d.jenis === "pemasukan") totalPemasukan += nominal;
+        if (d.jenis === "pengeluaran") totalPengeluaran += nominal;
+    });
+
+    const saldo = totalPemasukan - totalPengeluaran;
+
+    document.getElementById("total-income").innerText = formatRupiah(totalPemasukan);
+    document.getElementById("pengeluaran").innerText = formatRupiah(totalPengeluaran);
+    document.getElementById("total-balance").innerText = formatRupiah(saldo);
 }
 
 const btnTheme = document.getElementById("theme-toogle");
