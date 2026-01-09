@@ -277,7 +277,7 @@ function hapus(key) {
     }
 }
 
-const batasPengeluaran = 2125000; // Rp 2.125.000
+const batasPengeluaran = 2160000; // Rp 2.160.000
 
 function updateDashboard() {
     if (!currentUser) return;
